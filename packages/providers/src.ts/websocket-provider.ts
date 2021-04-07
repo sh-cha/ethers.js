@@ -1,5 +1,7 @@
 "use strict";
 
+import { ConnectionInfo } from "@ethersproject/web";
+
 import { BigNumber } from "@ethersproject/bignumber";
 import { Network, Networkish } from "@ethersproject/networks";
 import { defineReadOnly } from "@ethersproject/properties";
@@ -56,7 +58,7 @@ export class WebSocketProvider extends JsonRpcProvider {
 
     _wsReady: boolean;
 
-    constructor(url: string, network?: Networkish) {
+    constructor(url: string | ConnectionInfo, network?: Networkish) {
         // This will be added in the future; please open an issue to expedite
         if (network === "any") {
             logger.throwError("WebSocketProvider does not support 'any' network yet", Logger.errors.UNSUPPORTED_OPERATION, {
@@ -69,7 +71,7 @@ export class WebSocketProvider extends JsonRpcProvider {
 
         this._wsReady = false;
 
-        defineReadOnly(this, "_websocket", new WebSocket(this.connection.url));
+        defineReadOnly(this, "_websocket", new WebSocket(this.connection.url, undefined, {headers: this.connection.headers}));
         defineReadOnly(this, "_requests", { });
         defineReadOnly(this, "_subs", { });
         defineReadOnly(this, "_subIds", { });
